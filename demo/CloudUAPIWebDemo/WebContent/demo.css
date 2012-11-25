@@ -1,0 +1,25 @@
+body {
+	margin: 0;
+	padding: 0;
+}
+
+#browser {
+    border:1px solid black;
+	border-collapse:collapse;
+}
+#browser th {
+    border:1px solid black;
+	padding: 5px;
+}
+#browser td {
+    border:1px solid black;
+	padding: 5px;
+}
+.click {
+	background-color: #000000;
+	color: #ffffff;
+}
+.noclick {
+    background-color: #ffffff;
+    color: #000000;
+}
