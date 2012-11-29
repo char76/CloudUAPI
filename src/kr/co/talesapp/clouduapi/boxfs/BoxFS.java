@@ -20,9 +20,6 @@ import javax.activation.MimetypesFileTypeMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -54,6 +51,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import kr.co.talesapp.clouduapi.CUError;
 import kr.co.talesapp.clouduapi.CUFile;
@@ -96,10 +98,11 @@ public class BoxFS extends CloudFS {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
 			} else {
-				JSONObject json=JSONObject.fromObject(responseString);
-				if(json!=null && json.getString("type")!=null && json.getString("type").equals("error")) {
+				JsonParser jsonParser=new JsonParser();
+				JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+				if(json!=null && json.get("type")!=null && json.get("type").getAsString().equals("error")) {
 					err.error=CUError.ERROR;
-					err.errorString=json.getString("code");
+					err.errorString=json.get("code").getAsString();
 				} else {
 					err.error=CUError.SUCCESS;
 					err.errorString="success";
@@ -166,10 +169,11 @@ public class BoxFS extends CloudFS {
 			if(debug) {
 				System.out.println("box uploadFile : "+responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
-			if(json!=null && json.get("type")!=null && json.get("type").equals("error")) {
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+			if(json!=null && json.get("type")!=null && json.get("type").getAsString().equals("error")) {
 				err.error=CUError.ERROR;
-				err.errorString=json.getString("code");
+				err.errorString=json.get("code").getAsString();
 			} else {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
@@ -205,10 +209,11 @@ public class BoxFS extends CloudFS {
 				err.contentLength=responseEntity.getContentLength();
 				err.contentType=responseEntity.getContentType();
 			} else {
-				JSONObject json=JSONObject.fromObject(responseString);
-				if(json!=null && json.getString("type")!=null && json.getString("type").equals("error")) {
+				JsonParser jsonParser=new JsonParser();
+				JsonObject json=jsonParser.parse(responseString.toString()).getAsJsonObject();
+				if(json!=null && json.get("type")!=null && json.get("type").getAsString().equals("error")) {
 					err.error=CUError.ERROR;
-					err.errorString=json.getString("code");
+					err.errorString=json.get("code").getAsString();
 				} else {
 					err.error=CUError.SUCCESS;
 					err.errorString="success";
@@ -280,10 +285,11 @@ public class BoxFS extends CloudFS {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
 			} else {
-				JSONObject json=JSONObject.fromObject(responseString);
-				if(json!=null && json.getString("type")!=null && json.getString("type").equals("error")) {
+				JsonParser jsonParser=new JsonParser();
+				JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+				if(json!=null && json.get("type")!=null && json.get("type").getAsString().equals("error")) {
 					err.error=CUError.ERROR;
-					err.errorString=json.getString("code");
+					err.errorString=json.get("code").getAsString();
 				} else {
 					err.error=CUError.SUCCESS;
 					err.errorString="success";
@@ -328,10 +334,11 @@ public class BoxFS extends CloudFS {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
 			} else {
-				JSONObject json=JSONObject.fromObject(responseString);
-				if(json!=null && json.getString("type")!=null && json.getString("type").equals("error")) {
+				JsonParser jsonParser=new JsonParser();
+				JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+				if(json!=null && json.get("type")!=null && json.get("type").getAsString().equals("error")) {
 					err.error=CUError.ERROR;
-					err.errorString=json.getString("code");
+					err.errorString=json.get("code").getAsString();
 				} else {
 					err.error=CUError.SUCCESS;
 					err.errorString="success";
@@ -370,10 +377,11 @@ public class BoxFS extends CloudFS {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
 			} else {
-				JSONObject json=JSONObject.fromObject(responseString);
-				if(json!=null && json.getString("type")!=null && json.getString("type").equals("error")) {
+				JsonParser jsonParser=new JsonParser();
+				JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+				if(json!=null && json.get("type")!=null && json.get("type").getAsString().equals("error")) {
 					err.error=CUError.ERROR;
-					err.errorString=json.getString("code");
+					err.errorString=json.get("code").getAsString();
 				} else {
 					err.error=CUError.SUCCESS;
 					err.errorString="success";
@@ -417,10 +425,11 @@ public class BoxFS extends CloudFS {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
 			} else {
-				JSONObject json=JSONObject.fromObject(responseString);
-				if(json!=null && json.getString("type")!=null && json.getString("type").equals("error")) {
+				JsonParser jsonParser=new JsonParser();
+				JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+				if(json!=null && json.get("type")!=null && json.get("type").getAsString().equals("error")) {
 					err.error=CUError.ERROR;
-					err.errorString=json.getString("code");
+					err.errorString=json.get("code").getAsString();
 				} else {
 					err.error=CUError.SUCCESS;
 					err.errorString="success";
@@ -436,35 +445,37 @@ public class BoxFS extends CloudFS {
 		return err;
 	}
 	
-	public CUFile genCUFile(Map map) {
+	public CUFile genCUFile(JsonObject map) {
 		CUFile cufile=new CUFile();
 		try {
 			int size=0;
-			String kind=(String) map.get("type");
-			String name=((String)map.get("name"));
+			String kind=map.get("type").getAsString();
+			String name=map.get("name").getAsString();
 			if(map.get("size")!=null) {
-				size=(Integer) map.get("size");
+				size=map.get("size").getAsInt();
 			}
 			//String root=(String)map.get("parent");
 			Date time;
-			String tmp=((String) map.get("modified_at")).replaceAll("T", " ");
+			String tmp=( map.get("modified_at").getAsString()).replaceAll("T", " ");
 			StringBuilder b = new StringBuilder(tmp);
 			b.replace(tmp.lastIndexOf(":"), tmp.lastIndexOf(":")+1, "" );
 			tmp = b.toString();
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ", Locale.US).parse(tmp);
-			String path=(String)map.get("id");
+			String path=map.get("id").getAsString();
 			if(kind.equals("file")) {
 				cufile.setDir(false);
 			} else {
 				cufile.setDir(true);
 			}
-			cufile.setId((String)map.get("id"));
+			cufile.setId(map.get("id").getAsString());
 			cufile.setName(name);
 			cufile.setType(CloudType.BOX);
 			cufile.setPath(path);
 			cufile.setTime(time);
 			cufile.setSize(size);
-			cufile.setSha1((String)map.get("sha1"));
+			if(map.get("sha1")!=null) {
+				cufile.setSha1(map.get("sha1").getAsString());
+			}
 			//cufile.setRoot(root);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -495,16 +506,17 @@ public class BoxFS extends CloudFS {
 			if(debug) {
 				System.out.println("box getFiles : "+responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
-			json=json.getJSONObject("item_collection");
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+			json=json.getAsJsonObject("item_collection");
 			if(debug) {
 				System.out.println(json.toString());
 			}
 			List<CUFile> cufile=new ArrayList<CUFile>();
 			if(json!=null) {
-				JSONArray children=json.getJSONArray("entries");
+				JsonArray children=json.getAsJsonArray("entries");
 				for(int i=0;children!=null && i<children.size();i++){// obj : children){
-					Map map=(Map)(children.get(i));
+					JsonObject map=children.get(i).getAsJsonObject();
 					if(debug) {
 						System.out.println(map.toString());
 					}

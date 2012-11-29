@@ -19,9 +19,6 @@ import java.util.Random;
 
 import javax.activation.MimetypesFileTypeMap;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -41,6 +38,10 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import kr.co.talesapp.clouduapi.CUError;
 import kr.co.talesapp.clouduapi.CUFile;
@@ -69,10 +70,11 @@ public class DropboxFS extends CloudFS {
 			if(debug) {				
 				System.out.println("dropbox createFolder : "+responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
 			if(json.get("error")!=null) {
 				err.error=CUError.ERROR;
-				err.errorString=json.getString("error");
+				err.errorString=json.get("error").getAsString();
 			} else {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
@@ -96,7 +98,7 @@ public class DropboxFS extends CloudFS {
 			HttpPost httpPost=new HttpPost(fullPath);
 			httpPost.addHeader("Authorization", authHeader);
 			HttpResponse response;
-			FileEntity entity=new FileEntity(file, ContentType.create(new MimetypesFileTypeMap().getContentType(file)));
+			FileEntity entity=new FileEntity(file, ContentType.create(new MimetypesFileTypeMap().getContentType(file)).toString());
 			httpPost.setEntity(entity);
 			response = httpclient.execute(httpPost, localContext);
 			HttpEntity responseEntity = response.getEntity();
@@ -104,10 +106,11 @@ public class DropboxFS extends CloudFS {
 			if(debug) {				
 				System.out.println(responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
 			if(json.get("error")!=null) {
 				err.error=CUError.ERROR;
-				err.errorString=json.getString("error");
+				err.errorString=json.get("error").getAsString();
 			} else {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
@@ -144,10 +147,11 @@ public class DropboxFS extends CloudFS {
 				err.contentLength=responseEntity.getContentLength();
 				err.contentType=responseEntity.getContentType();
 			} else {
-				JSONObject json=JSONObject.fromObject(responseString);
-				if(json!=null && json.getString("type")!=null && json.getString("type").equals("error")) {
+				JsonParser jsonParser=new JsonParser();
+				JsonObject json=jsonParser.parse(responseString.toString()).getAsJsonObject();
+				if(json!=null && json.get("type")!=null && json.get("type").getAsString().equals("error")) {
 					err.error=CUError.ERROR;
-					err.errorString=json.getString("code");
+					err.errorString=json.get("code").getAsString();
 				} else {
 					err.error=CUError.SUCCESS;
 					err.errorString="success";
@@ -182,10 +186,11 @@ public class DropboxFS extends CloudFS {
 			if(debug) {				
 				System.out.println(path+", "+responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
 			if(json.get("error")!=null) {
 				err.error=CUError.ERROR;
-				err.errorString=json.getString("error");
+				err.errorString=json.get("error").getAsString();
 			} else {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
@@ -228,10 +233,11 @@ public class DropboxFS extends CloudFS {
 			if(debug) {				
 				System.out.println(responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
 			if(json.get("error")!=null) {
 				err.error=CUError.ERROR;
-				err.errorString=json.getString("error");
+				err.errorString=json.get("error").getAsString();
 			} else {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
@@ -271,13 +277,14 @@ public class DropboxFS extends CloudFS {
 			if(debug) {
 				System.out.println(responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
-			if(json.getBoolean("is_deleted")) {
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+			if(json.get("is_deleted").getAsBoolean()) {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
 			} else if(json.get("error")!=null) {
 				err.error=CUError.UNKNOWN;
-				err.errorString=json.getString("error");
+				err.errorString=json.get("error").getAsString();
 			} else {
 				err.error=CUError.UNKNOWN;
 				err.errorString="unknown error";
@@ -291,16 +298,16 @@ public class DropboxFS extends CloudFS {
 		return err;
 	}
 
-	public CUFile genCUFile(Map map) {
+	public CUFile genCUFile(JsonObject map) {
 		CUFile cufile=new CUFile();
-		boolean kind=(Boolean)map.get("is_dir");
-		int size=(Integer) map.get("bytes");
-		String name=((String)map.get("path")).replaceAll(".*/", "");
-		String path=(String)map.get("path");
-		String root=(String)map.get("root");
+		boolean kind=map.get("is_dir").getAsBoolean();
+		int size=map.get("bytes").getAsInt();
+		String name=(map.get("path").getAsString()).replaceAll(".*/", "");
+		String path=map.get("path").getAsString();
+		String root=map.get("root").getAsString();
 		Date time;
 		try {
-			time = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US).parse(((String) map.get("modified")).replaceAll("\\p{Cntrl}", ""));
+			time = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US).parse((map.get("modified").getAsString()).replaceAll("\\p{Cntrl}", ""));
 			//time = new SimpleDateFormat("yyyy-dd-MM+HH:mm:ss").parse((String) map.get("modified"));
 			cufile.setDir(kind);
 			cufile.setName(name);
@@ -356,11 +363,12 @@ public class DropboxFS extends CloudFS {
 			if(debug) {
 				System.out.println("dropbox getFiles : "+responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
-			JSONArray children=json.getJSONArray("contents");
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+			JsonArray children=json.getAsJsonArray("contents");
 			List<CUFile> cufile=new ArrayList<CUFile>();
 			for(int i=0;children!=null && i<children.size();i++){// obj : children){
-				Map map=(Map)(children.get(i));
+				JsonObject map=children.get(i).getAsJsonObject();
 				if(debug) {
 					System.out.println(map.toString());
 				}

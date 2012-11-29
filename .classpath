@@ -9,6 +9,6 @@
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/httpmime-4.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/json-lib-2.4-jdk15.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

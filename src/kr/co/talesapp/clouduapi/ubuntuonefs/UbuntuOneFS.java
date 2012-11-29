@@ -18,11 +18,6 @@ import java.util.Random;
 
 import javax.activation.MimetypesFileTypeMap;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -38,6 +33,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import kr.co.talesapp.clouduapi.CUError;
 import kr.co.talesapp.clouduapi.CUFile;
@@ -82,10 +81,11 @@ public class UbuntuOneFS extends CloudFS {
 				System.out.println("ubuntuone createFolder : "+httpPut.getURI());
 				System.out.println("ubuntuone createFolder : "+responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
 			if(json.get("error")!=null) {
 				err.error=CUError.ERROR;
-				err.errorString=json.getString("error");
+				err.errorString=json.get("error").getAsString();
 			} else {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
@@ -116,7 +116,7 @@ public class UbuntuOneFS extends CloudFS {
 				System.out.println("ubuntuone uploadFile : "+httpPut.getURI());
 			}
 			httpPut.setHeader("Authorization", authHeader);
-			FileEntity entity=new FileEntity(file, ContentType.create(new MimetypesFileTypeMap().getContentType(file)));
+			FileEntity entity=new FileEntity(file, ContentType.create(new MimetypesFileTypeMap().getContentType(file)).toString());
 			httpPut.setEntity(entity);
 			HttpResponse response;
 			response = httpclient.execute(httpPut, localContext);
@@ -125,10 +125,11 @@ public class UbuntuOneFS extends CloudFS {
 			if(debug){
 				System.out.println("ubuntuone uploadFile : "+responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
 			if(json.get("error")!=null) {
 				err.error=CUError.ERROR;
-				err.errorString=json.getString("error");
+				err.errorString=json.get("error").getAsString();
 			} else {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
@@ -169,10 +170,11 @@ public class UbuntuOneFS extends CloudFS {
 				err.contentLength=responseEntity.getContentLength();
 				err.contentType=responseEntity.getContentType();
 			} else {
-				JSONObject json=JSONObject.fromObject(responseString);
-				if(json!=null && json.getString("type")!=null && json.getString("type").equals("error")) {
+				JsonParser jsonParser=new JsonParser();
+				JsonObject json=jsonParser.parse(responseString.toString()).getAsJsonObject();
+				if(json!=null && json.get("type")!=null && json.get("type").getAsString().equals("error")) {
 					err.error=CUError.ERROR;
-					err.errorString=json.getString("code");
+					err.errorString=json.get("code").getAsString();
 				} else {
 					err.error=CUError.SUCCESS;
 					err.errorString="success";
@@ -220,10 +222,11 @@ public class UbuntuOneFS extends CloudFS {
 				System.out.println("ubuntuone moveFile : "+httpPut.getURI());
 				System.out.println("ubuntuone moveFile : "+responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
 			if(json.get("error")!=null) {
 				err.error=CUError.ERROR;
-				err.errorString=json.getString("error");
+				err.errorString=json.get("error").getAsString();
 			} else {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
@@ -272,10 +275,11 @@ public class UbuntuOneFS extends CloudFS {
 				System.out.println("ubuntuone moveFile : "+httpPut.getURI());
 				System.out.println("ubuntuone moveFile : "+responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
 			if(json.get("error")!=null) {
 				err.error=CUError.ERROR;
-				err.errorString=json.getString("error");
+				err.errorString=json.get("error").getAsString();
 			} else {
 				err.error=CUError.SUCCESS;
 				err.errorString="success";
@@ -372,19 +376,19 @@ public class UbuntuOneFS extends CloudFS {
 		return err;
 	}
 
-	public CUFile genCUFile(Map map) {
+	public CUFile genCUFile(JsonObject map) {
 		CUFile cufile=new CUFile();
 		int size=0;
-		String kind=(String) map.get("kind");
+		String kind=map.get("kind").getAsString();
 		if(map.get("size")!=null) {
-			size=(Integer) map.get("size");
+			size=map.get("size").getAsInt();
 		}
-		String name=((String)map.get("path")).replaceAll(".*/", "");
-		String path=(String)map.get("resource_path");
-		String root=(String)map.get("parent_path");
+		String name=(map.get("path").getAsString()).replaceAll(".*/", "");
+		String path=map.get("resource_path").getAsString();
+		String root=map.get("parent_path").getAsString();
 		Date time;
 		try {
-			String tmp=((String) map.get("when_changed")).replaceAll("T", " ");
+			String tmp=(map.get("when_changed").getAsString()).replaceAll("T", " ");
 			tmp=tmp.replaceAll("Z", "");
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).parse(tmp);
 			if(kind.equals("file")) {
@@ -435,11 +439,12 @@ public class UbuntuOneFS extends CloudFS {
 			if(debug) {
 				System.out.println("ubuntuone getFiles : "+responseString);
 			}
-			JSONObject json=JSONObject.fromObject(responseString);
-			JSONArray children=json.getJSONArray("children");
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+			JsonArray children=json.getAsJsonArray("children");
 			List<CUFile> cufile=new ArrayList<CUFile>();
 			for(int i=0;children!=null && i<children.size();i++){// obj : children){
-				Map map=(Map)(children.get(i));
+				JsonObject map=children.get(i).getAsJsonObject();
 				if(debug) {
 					System.out.println(map.toString());
 				}
@@ -533,11 +538,12 @@ public class UbuntuOneFS extends CloudFS {
 			HttpEntity responseEntity = response.getEntity();
 			String responseString=EntityUtils.toString(responseEntity);
 			//System.out.println(responseString);
-			JSONObject jsonObj=JSONObject.fromObject(responseString);
-			oauth_token.setOAuthToken(jsonObj.getString("token"));
-			oauth_token.setOAuthTokenSecret(jsonObj.getString("token_secret"));
-			oauth_token.setConsumerKey(jsonObj.getString("consumer_key"));
-			oauth_token.setConsumerSecret(jsonObj.getString("consumer_secret"));
+			JsonParser jsonParser=new JsonParser();
+			JsonObject json=jsonParser.parse(responseString).getAsJsonObject();
+			oauth_token.setOAuthToken(json.get("token").getAsString());
+			oauth_token.setOAuthTokenSecret(json.get("token_secret").getAsString());
+			oauth_token.setConsumerKey(json.get("consumer_key").getAsString());
+			oauth_token.setConsumerSecret(json.get("consumer_secret").getAsString());
 			//EntityUtils.consume(responseEntity);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
