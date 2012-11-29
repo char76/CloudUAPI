@@ -1,0 +1,10 @@
+<resources>
+
+    <string name="app_name">CloudU API Demo</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="setting_title">Setting</string>
+    <string name="title_activity_web_view">Web</string>
+
+</resources>

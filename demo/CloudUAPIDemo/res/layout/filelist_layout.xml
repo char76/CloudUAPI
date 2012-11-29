@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="60px"
+    android:background="@drawable/width_bar"
+    android:gravity="center_horizontal|center_vertical"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:id="@+id/fileImage"
+        android:layout_width="37px"
+        android:layout_height="48px"
+        android:layout_marginLeft="24px"
+        android:background="@drawable/file" />
+
+	<TextView 
+	    android:id="@+id/fileTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="40dip"
+        android:layout_weight="1"
+        android:gravity="left|center_vertical"
+        android:text="name"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:paddingLeft="10dip"
+        android:singleLine="true"
+	    />
+	<TextView 
+	    android:id="@+id/cloudtype"
+        android:layout_width="wrap_content"
+        android:layout_height="40dip"
+        android:layout_weight="1"
+        android:gravity="left|center_vertical"
+        android:text="name"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:paddingLeft="10dip"
+        android:singleLine="true"
+	    />
+</LinearLayout>
