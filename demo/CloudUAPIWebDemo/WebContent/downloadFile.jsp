@@ -1,3 +1,4 @@
+<%@ page trimDirectiveWhitespaces="true" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.io.*, java.util.List, kr.co.talesapp.clouduapi.CUError, kr.co.talesapp.clouduapi.CUFile, kr.co.talesapp.clouduapi.OAuthTokens, kr.co.talesapp.clouduapi.CloudUFS, kr.co.talesapp.clouduapi.CloudFS, kr.co.talesapp.clouduapi.interfaces.*, java.net.URLEncoder;" %>
 <%
@@ -23,9 +24,10 @@ if(type.equals("ubuntuone")) {
 }
 //System.out.println(error.contentType.toString());
 //System.out.println(error.contentLength);
+response.setCharacterEncoding("utf-8");
 response.setContentType(error.contentType.toString());
 response.setContentLength((int)error.contentLength);
-response.setHeader("Content-Disposition", "attachment;filename="+name);
+response.setHeader("Content-Disposition", "attachment;filename=\""+URLEncoder.encode(name, "UTF-8")+"\"");
 OutputStream outstr=response.getOutputStream();  
 outstr.write(error.body, 0, error.body.length); 
 outstr.flush();

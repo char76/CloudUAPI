@@ -8,7 +8,6 @@ cloudUFS.init(ICloudFS.CloudType.UBUNTUONE, null, "token",
         "secret",
         "consumer key",
         "consumer secret");
-
 cloudUFS.setDebug(true);
 String type_str=request.getParameter("type");
 ICloudFS.CloudType type;
@@ -37,7 +36,7 @@ List<CUFile> list=cloudUFS.getFiles(type, path);
 <script language="javascript">
 var type=<%=type_str%>;
 var id;
-var path;
+var path='<%=path%>';
 var name;
 var parent;
 var dir;
@@ -82,15 +81,16 @@ function copymove(){
         p_path=path+'/'+window.opener.name;
         break;
     }
+    alert(p_path);
 <%
 	if(buttonText.equals("Copy")){
 		if(dir.equals("0")) {
 %>
-    uri='copyFile.jsp?type='+t+'&path='+window.opener.path+'&newPath='+p_path;
+    uri='copyFile.jsp?type='+t+'&dir='+dir+'&path='+window.opener.path+'&newPath='+p_path;
 <%
 		} else {
 %>
-    uri='copyFolder.jsp?type='+t+'&path='+window.opener.path+'&newPath='+p_path;
+    uri='copyFolder.jsp?type='+t+'&dir='+dir+'&path='+window.opener.path+'&newPath='+p_path;
 <%
 		}
 %>
@@ -100,17 +100,17 @@ function copymove(){
 	}).done(function(data) {
 	    alert(data.error_str);
 	    window.opener.location.reload();
-	    window.close();
+	    //window.close();
 	});
 <%
 	} else if(buttonText.equals("Move")){
 		if(dir.equals("0")) {
 %>
-    uri='moveFile.jsp?type='+t+'&path='+window.opener.path+'&newPath='+p_path;
+    uri='moveFile.jsp?type='+t+'&dir='+dir+'&path='+window.opener.path+'&newPath='+p_path;
 <%
 		} else {
 %>
-    uri='moveFolder.jsp?type='+t+'&path='+window.opener.path+'&newPath='+p_path;
+    uri='moveFolder.jsp?type='+t+'&dir='+dir+'&path='+window.opener.path+'&newPath='+p_path;
 <%
 		}
 %>
@@ -154,7 +154,7 @@ for(int i=0;list!=null && i<list.size();i++) {
     if(f.getDir()) {
 %>
         <tr onclick="display_toolbar(<%=typei%>, <%=f.getDir()%>, '<%=f.getName()%>', '<%=f.getPath()%>', '<%=f.getId()%>', '<%=f.getRoot()%>', '<%=f.getSha1()%>');">
-        <td><a href="?buttonText=<%=buttonText%>&type=<%=typei%>&path=<%=f.getPath()%>"><%=f.getName()%></a></td>
+        <td><a href="?buttonText=<%=buttonText%>&dir=<%=dir%>&type=<%=typei%>&path=<%=f.getPath()%>"><%=f.getName()%></a></td>
         <td><%=f.getSize()%></td>
         <td><%=f.getTime()%></td>
         <td><%=f.getType()%></td>

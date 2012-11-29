@@ -89,6 +89,10 @@ public class DropboxFS extends CloudFS {
 		CUError err=new CUError();
 		try {
 			String fullPath=prop.getProperty("DropboxFS.uploadFile")+"/"+prop.getProperty("DropboxFS.root")+"/"+folder_path+"/"+fileName;
+			fullPath=fullPath.replaceAll("%2F", "/");
+			fullPath=fullPath.replaceAll("%7E", "~");
+			fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll(" ", "%20");
 			HttpPost httpPost=new HttpPost(fullPath);
 			httpPost.addHeader("Authorization", authHeader);
 			HttpResponse response;
@@ -120,6 +124,10 @@ public class DropboxFS extends CloudFS {
 		CUError err=new CUError();
 		try {
 			String fullPath=prop.getProperty("DropboxFS.downloadFile")+"/"+prop.getProperty("DropboxFS.root")+"/"+path;
+			fullPath=fullPath.replaceAll("%2F", "/");
+			fullPath=fullPath.replaceAll("%7E", "~");
+			fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll(" ", "%20");
 			HttpGet httpGet=new HttpGet(fullPath);
 			httpGet.addHeader("Authorization", authHeader);
 			HttpResponse response;
@@ -329,8 +337,12 @@ public class DropboxFS extends CloudFS {
 		try {
 			String fullPath=prop.getProperty("DropboxFS.getFolderTree")+"/"+prop.getProperty("DropboxFS.root");
 			if(path!=null && !path.equals("") && !path.equals("/")) {
-				fullPath+="/"+URLEncoder.encode(path, "UTF-8");
+				fullPath+="/"+path;
 			}
+			fullPath=fullPath.replaceAll("%2F", "/");
+			fullPath=fullPath.replaceAll("%7E", "~");
+			fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll(" ", "%20");
 			fullPath+="/?list=true";
 			HttpGet httpGet=new HttpGet(fullPath);
 			httpGet.setHeader("Authorization", authHeader);
@@ -418,7 +430,7 @@ public class DropboxFS extends CloudFS {
 			Map<String, String> map = getQueryMap(responseString);
 			token.setOAuthToken(map.get("oauth_token"));
 			token.setOAuthTokenSecret(map.get("oauth_token_secret"));
-			EntityUtils.consume(responseEntity);
+			//EntityUtils.consume(responseEntity);
 			/*
 			HttpEntity responseEntity = response.getEntity();
 			responseEntity.getContent()
@@ -458,11 +470,14 @@ public class DropboxFS extends CloudFS {
 			HttpResponse response = httpclient.execute(httpPost, localContext);
 			HttpEntity responseEntity = response.getEntity();
 			String responseString=EntityUtils.toString(responseEntity);
+			if(debug) {
+				System.out.println("getRequestToken : "+responseString);
+			}
 			Map<String, String> map = getQueryMap(responseString);
 			oauth_token.setOAuthToken(map.get("oauth_token"));
 			oauth_token.setOAuthTokenSecret(map.get("oauth_token_secret"));
 			//System.out.println("request token : "+responseString);
-			EntityUtils.consume(responseEntity);
+			//EntityUtils.consume(responseEntity);
 			/*
 			HttpEntity responseEntity = response.getEntity();
 			responseEntity.getContent()

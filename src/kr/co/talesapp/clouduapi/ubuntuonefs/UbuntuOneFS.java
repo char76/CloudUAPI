@@ -3,6 +3,7 @@ package kr.co.talesapp.clouduapi.ubuntuonefs;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -58,11 +59,11 @@ public class UbuntuOneFS extends CloudFS {
 				fullPath+="/~/Ubuntu%20One/"+name;
 			} else {
 				fullPath+=parent_path+"/"+name;
-				fullPath=fullPath.replaceAll("%2F", "/");
-				fullPath=fullPath.replaceAll("%7E", "~");
-				fullPath=fullPath.replaceAll("\\+", "%20");
-				fullPath=fullPath.replaceAll(" ", "%20");
 			}
+			fullPath=fullPath.replaceAll("%2F", "/");
+			fullPath=fullPath.replaceAll("%7E", "~");
+			fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll(" ", "%20");
 			if(debug) {
 				System.out.println("ubuntu createFolder : "+fullPath);
 			}
@@ -70,6 +71,7 @@ public class UbuntuOneFS extends CloudFS {
 			httpPut.setHeader("Authorization", authHeader);
 			StringEntity input;
 			input = new StringEntity("{ \"kind\": \"directory\" }");
+			input.setContentEncoding("utf-8");
 			input.setContentType("application/json");
 			httpPut.setEntity(input);
 			HttpResponse response;
@@ -104,11 +106,11 @@ public class UbuntuOneFS extends CloudFS {
 				fullPath+="/~/Ubuntu%20One/"+fileName;
 			} else {
 				fullPath+=folder_path+"/"+fileName;
-				fullPath=fullPath.replaceAll("%2F", "/");
-				fullPath=fullPath.replaceAll("%7E", "~");
-				fullPath=fullPath.replaceAll("\\+", "%20");
-				fullPath=fullPath.replaceAll(" ", "%20");
 			}
+			fullPath=fullPath.replaceAll("%2F", "/");
+			fullPath=fullPath.replaceAll("%7E", "~");
+			fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll(" ", "%20");
 			HttpPut httpPut=new HttpPut(fullPath);
 			if(debug){
 				System.out.println("ubuntuone uploadFile : "+httpPut.getURI());
@@ -195,17 +197,18 @@ public class UbuntuOneFS extends CloudFS {
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
 			fullPath=fullPath.replaceAll("\\+", "%20");
-			newPath=URLEncoder.encode(newPath, "UTF-8");
-			newPath=newPath.replaceAll("%2F", "/");
-			newPath=newPath.replaceAll("%7E", "~");
-			newPath=newPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll(" ", "%20");
+
+			newPath=newPath.replaceAll("\\+", "\\ ");
+			newPath=newPath.replaceAll(" ", "\\ ");
 			newPath=newPath.replaceAll("/~/Ubuntu%20One", "");
 			
 			HttpPut httpPut=new HttpPut(fullPath);
 			httpPut.setHeader("Authorization", authHeader);
 			//JSONObject json=JSONObject.fromObject("{ \"path\": "+newPath+" }");
 			StringEntity input;
-			input = new StringEntity("{ \"path\": \""+newPath+"\" }");
+			input = new StringEntity("{ \"path\": \""+newPath+"\" }", "UTF-8");
+			input.setContentEncoding("utf-8");
 			input.setContentType("application/json");
 			httpPut.setEntity(input);
 			HttpResponse response;
@@ -213,6 +216,7 @@ public class UbuntuOneFS extends CloudFS {
 			HttpEntity responseEntity = response.getEntity();
 			String responseString=EntityUtils.toString(responseEntity);
 			if(debug) {
+				System.out.println("ubuntuone moveFile : { \"path\": \""+newPath+"\" }");
 				System.out.println("ubuntuone moveFile : "+httpPut.getURI());
 				System.out.println("ubuntuone moveFile : "+responseString);
 			}
@@ -241,21 +245,22 @@ public class UbuntuOneFS extends CloudFS {
 		CUError err=new CUError();
 		try {
 			String fullPath=prop.getProperty("UbuntuOneFS.move");
-			fullPath+=URLEncoder.encode(path, "UTF-8");
+			fullPath+=path;
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
 			fullPath=fullPath.replaceAll("\\+", "%20");
-			newPath=URLEncoder.encode(newPath, "UTF-8");
-			newPath=newPath.replaceAll("%2F", "/");
-			newPath=newPath.replaceAll("%7E", "~");
-			newPath=newPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll(" ", "%20");
+
+			newPath=newPath.replaceAll("\\+", "\\ ");
+			newPath=newPath.replaceAll(" ", "\\ ");
 			newPath=newPath.replaceAll("/~/Ubuntu%20One", "");
 			
 			HttpPut httpPut=new HttpPut(fullPath);
 			httpPut.setHeader("Authorization", authHeader);
 			//JSONObject json=JSONObject.fromObject("{ \"path\": "+newPath+" }");
 			StringEntity input;
-			input = new StringEntity("{ \"path\": \""+newPath+"\" }");
+			input = new StringEntity("{ \"path\": \""+newPath+"\" }", "UTF-8");
+			input.setContentEncoding("utf-8");
 			input.setContentType("application/json");
 			httpPut.setEntity(input);
 			HttpResponse response;
@@ -263,6 +268,7 @@ public class UbuntuOneFS extends CloudFS {
 			HttpEntity responseEntity = response.getEntity();
 			String responseString=EntityUtils.toString(responseEntity);
 			if(debug) {
+				System.out.println("ubuntuone moveFile : { \"path\": \""+newPath+"\" }");
 				System.out.println("ubuntuone moveFile : "+httpPut.getURI());
 				System.out.println("ubuntuone moveFile : "+responseString);
 			}
@@ -336,10 +342,11 @@ public class UbuntuOneFS extends CloudFS {
 		CUError err=new CUError();
 		String fullPath=prop.getProperty("UbuntuOneFS.delete");
 		try {
-			fullPath+=URLEncoder.encode(path, "UTF-8");
+			fullPath+=path;
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
 			fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll(" ", "%20");
 			HttpDelete delete = new HttpDelete(fullPath);
 			delete.setHeader("Authorization", authHeader);
 			HttpResponse response;
@@ -403,14 +410,15 @@ public class UbuntuOneFS extends CloudFS {
 		try {
 			String fullPath=prop.getProperty("UbuntuOneFS.getFolderTree");
 			if(path!=null && !path.equals("") && !path.equals("/")) {
-				fullPath+=URLEncoder.encode(path, "UTF-8");
-				fullPath=fullPath.replaceAll("%2F", "/");
-				fullPath=fullPath.replaceAll("%7E", "~");
-				fullPath=fullPath.replaceAll("\\+", "%20");
+				fullPath+=path;
 				//fullPath+=path;
 			} else if(path!=null && path.equals("/")){
 				fullPath+="/~/Ubuntu%20One";
 			}
+			fullPath=fullPath.replaceAll("%2F", "/");
+			fullPath=fullPath.replaceAll("%7E", "~");
+			fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll(" ", "%20");
 			fullPath+="/?include_children=true";
 			if(debug) {
 				System.out.println("ubuntuone uri : "+fullPath);
@@ -497,7 +505,7 @@ public class UbuntuOneFS extends CloudFS {
 			if(debug) {
 				System.out.println(responseString);
 			}
-			EntityUtils.consume(responseEntity);
+			//EntityUtils.consume(responseEntity);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -530,7 +538,7 @@ public class UbuntuOneFS extends CloudFS {
 			oauth_token.setOAuthTokenSecret(jsonObj.getString("token_secret"));
 			oauth_token.setConsumerKey(jsonObj.getString("consumer_key"));
 			oauth_token.setConsumerSecret(jsonObj.getString("consumer_secret"));
-			EntityUtils.consume(responseEntity);
+			//EntityUtils.consume(responseEntity);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

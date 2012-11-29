@@ -17,32 +17,31 @@ OAuthTokens oAuthTokens=new OAuthTokens();
 CloudUFS cloudUFS=new CloudUFS();
 if(((auth_token==null && ticket==null) || oauth_token==null) && type!=null) {
 	if(type.equals("dropbox")) {
-	    oAuthTokens=cloudUFS.getRequestToken(ICloudFS.CloudType.DROPBOX, "api_key", "api_secret");
+	    oAuthTokens=cloudUFS.getRequestToken(ICloudFS.CloudType.DROPBOX, "", "");
+	    // System.out.println(oAuthTokens.getOAuthToken()+", "+oAuthTokens.getOAuthTokenSecret());
         session.setAttribute("oAuthToken", oAuthTokens);
-	    response.sendRedirect(cloudUFS.prop.getProperty("DropboxFS.authorize")+"?oauth_token="+oAuthTokens.getOAuthToken()+"&oauth_consumer_key=5p1btcqv2j3axml&oauth_callback="+URLEncoder.encode("http://localhost:8080/CloudUAPIWebDemo/getAccessToken.jsp", "UTF-8"));
+	    response.sendRedirect(cloudUFS.prop.getProperty("DropboxFS.authorize")+"?oauth_token="+oAuthTokens.getOAuthToken()+"&oauth_consumer_key=&oauth_callback="+URLEncoder.encode("http://localhost:8080/CloudUAPIWebDemo/getAccessToken.jsp", "UTF-8"));
 	} else if(type.equals("box")) {
-        oAuthTokens=cloudUFS.getRequestToken(ICloudFS.CloudType.BOX, "api_key", null);
+        oAuthTokens=cloudUFS.getRequestToken(ICloudFS.CloudType.BOX, "", null);
         System.out.println(oAuthTokens.getTicket());
         response.sendRedirect(cloudUFS.prop.getProperty("BoxFS.authorize")+oAuthTokens.getTicket());
 	} else if(type.equals("ubuntuone")) {
 		cloudUFS.setDebug(true);
-        oAuthTokens=cloudUFS.getRequestToken(ICloudFS.CloudType.UBUNTUONE, "id", "pw");
+        oAuthTokens=cloudUFS.getRequestToken(ICloudFS.CloudType.UBUNTUONE, "", "");
         System.out.println(oAuthTokens.getOAuthToken()+", "+oAuthTokens.getOAuthTokenSecret()+", "+oAuthTokens.getConsumerKey()+", "+oAuthTokens.getConsumerSecret());
         oAuthTokens=cloudUFS.getAccessToken(ICloudFS.CloudType.UBUNTUONE, oAuthTokens);
 	}
 } else {
-	if(oauth_token!=null && uid!=null) {
-		// for dropbox
+	if(oauth_token!=null && uid!=null) { // for dropbox
         oAuthTokens=(OAuthTokens)session.getAttribute("oAuthToken");
-        oAuthTokens.setConsumerKey("api_key");
-        oAuthTokens.setConsumerSecret("api_secret");
+        oAuthTokens.setConsumerKey("");
+        oAuthTokens.setConsumerSecret("");
         cloudUFS.getAccessToken(ICloudFS.CloudType.DROPBOX, oAuthTokens);
 	}
 	out.println(oAuthTokens.getAccessToken()+", "+oAuthTokens.getConsumerKey()+", "+oAuthTokens.getConsumerSecret()+", "+oAuthTokens.getOAuthToken()+", "+oAuthTokens.getOAuthTokenSecret());
 	out.println(uid+", "+oauth_token+"<br />");
     out.println(auth_token+", "+ticket+"<br />");
-	// for box
-    auth_token=cloudUFS.getAuthToken("box api key", ticket);
+    auth_token=cloudUFS.getAuthToken("", ticket);
     out.println(auth_token);
 }
 %>

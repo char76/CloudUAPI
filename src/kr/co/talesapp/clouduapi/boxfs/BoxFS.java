@@ -562,7 +562,7 @@ public class BoxFS extends CloudFS {
 	                   }
 	              }
 	        }
-	        EntityUtils.consume(responseEntity);		
+	        // EntityUtils.consume(responseEntity);		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -607,7 +607,7 @@ public class BoxFS extends CloudFS {
                   }
             }
 
-	        EntityUtils.consume(responseEntity);
+	        //EntityUtils.consume(responseEntity);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
