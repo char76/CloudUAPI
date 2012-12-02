@@ -3,6 +3,8 @@ package kr.co.talesapp.clouduapi.ubuntuonefs;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.ParseException;
@@ -16,17 +18,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
-import javax.activation.MimetypesFileTypeMap;
+//import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -42,7 +42,6 @@ import kr.co.talesapp.clouduapi.CUError;
 import kr.co.talesapp.clouduapi.CUFile;
 import kr.co.talesapp.clouduapi.CloudFS;
 import kr.co.talesapp.clouduapi.OAuthTokens;
-import kr.co.talesapp.clouduapi.interfaces.ICloudFS.CloudType;
 
 public class UbuntuOneFS extends CloudFS {
 	Properties prop;
@@ -98,6 +97,7 @@ public class UbuntuOneFS extends CloudFS {
 		}
 		return err;
 	}
+	@SuppressWarnings("deprecation")
 	public CUError uploadFile(File file, String fileName, String folder_path) {
 		CUError err=new CUError();
 		try {
@@ -116,7 +116,10 @@ public class UbuntuOneFS extends CloudFS {
 				System.out.println("ubuntuone uploadFile : "+httpPut.getURI());
 			}
 			httpPut.setHeader("Authorization", authHeader);
-			FileEntity entity=new FileEntity(file, ContentType.create(new MimetypesFileTypeMap().getContentType(file)).toString());
+		    FileNameMap fileNameMap = URLConnection.getFileNameMap();
+		    String type = fileNameMap.getContentTypeFor(file.getAbsolutePath());
+			//FileEntity entity=new FileEntity(file, ContentType.create(new MimetypesFileTypeMap().getContentType(file)).toString());
+			FileEntity entity=new FileEntity(file, type);
 			httpPut.setEntity(entity);
 			HttpResponse response;
 			response = httpclient.execute(httpPut, localContext);

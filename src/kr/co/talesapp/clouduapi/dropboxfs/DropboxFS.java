@@ -1,13 +1,8 @@
 package kr.co.talesapp.clouduapi.dropboxfs;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,24 +12,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
-import javax.activation.MimetypesFileTypeMap;
-
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -87,6 +73,7 @@ public class DropboxFS extends CloudFS {
 		}
 		return err;
 	}
+	@SuppressWarnings("deprecation")
 	public CUError uploadFile(File file, String fileName, String folder_path) {
 		CUError err=new CUError();
 		try {
@@ -98,7 +85,10 @@ public class DropboxFS extends CloudFS {
 			HttpPost httpPost=new HttpPost(fullPath);
 			httpPost.addHeader("Authorization", authHeader);
 			HttpResponse response;
-			FileEntity entity=new FileEntity(file, ContentType.create(new MimetypesFileTypeMap().getContentType(file)).toString());
+		    FileNameMap fileNameMap = URLConnection.getFileNameMap();
+		    String type = fileNameMap.getContentTypeFor(file.getAbsolutePath());
+			FileEntity entity=new FileEntity(file, type);
+			//FileEntity entity=new FileEntity(file, ContentType.create(new MimetypesFileTypeMap().getContentType(file)).toString());
 			httpPost.setEntity(entity);
 			response = httpclient.execute(httpPost, localContext);
 			HttpEntity responseEntity = response.getEntity();
