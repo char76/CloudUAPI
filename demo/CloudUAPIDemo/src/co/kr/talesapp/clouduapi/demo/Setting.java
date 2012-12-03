@@ -17,7 +17,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class Setting extends Activity {
+public class Setting extends Activity implements OnClickListener {
 	Button boxButton;
 	Button dBoxButton;
 	Button uOneButton;
@@ -89,4 +89,10 @@ public class Setting extends Activity {
 		webView.putExtra("URL", url);
 		startActivity(webView);
     }
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		
+	}
 }
