@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,6 +39,7 @@ import org.apache.http.entity.mime.FormBodyPart;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
+//import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -81,10 +84,11 @@ public class BoxFS extends CloudFS {
 			if(parentId.equals("/")){
 				parentId="0";
 			}
-			input = new StringEntity("{ \"name\": \""+name+"\", \"parent\": {\"id\": \""+parentId+"\" } }");
+			input = new StringEntity("{ \"name\": \""+name+"\", \"parent\": {\"id\": \""+parentId+"\" } }", "UTF-8");
 			if(debug) {
-				System.out.println("box createFolder : "+input.toString());
+				System.out.println("box createFolder : "+input.toString()+", "+name);
 			}
+			input.setContentEncoding("UTF-8");
 			input.setContentType("application/json");
 			httpPost.setEntity(input);
 			HttpResponse response;
@@ -159,7 +163,7 @@ public class BoxFS extends CloudFS {
             FileBody bin = new FileBody(file);
             MultipartEntity reqEntity = new MultipartEntity();
             reqEntity.addPart(new FormBodyPart("file", bin));
-            reqEntity.addPart("filename", new StringBody(fileName));
+            reqEntity.addPart("filename", new StringBody(URLDecoder.decode(fileName, "UTF-8")));
             reqEntity.addPart("folder_id", new StringBody(String.valueOf(folderId)));
             httpPost.setEntity(reqEntity);
 			HttpResponse response;
