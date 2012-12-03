@@ -260,8 +260,9 @@ public class UbuntuOneFS extends CloudFS {
 
 			newPath=newPath.replaceAll("\\+", "\\ ");
 			newPath=newPath.replaceAll(" ", "\\ ");
+			newPath=newPath.replaceAll("/~/Ubuntu One", "");
 			newPath=newPath.replaceAll("/~/Ubuntu%20One", "");
-			
+
 			HttpPut httpPut=new HttpPut(fullPath);
 			httpPut.setHeader("Authorization", authHeader);
 			//JSONObject json=JSONObject.fromObject("{ \"path\": "+newPath+" }");

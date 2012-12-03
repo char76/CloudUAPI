@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,6 +37,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
@@ -157,20 +159,20 @@ public class BoxFS extends CloudFS {
 			httpPost.setEntity(entity);
 			httpPost.setEntity(sendentity);
 			*/
-			if(debug) {
-				System.out.println("box uploadFile : "+httpPost.getURI()+", "+folderId+", "+fileName);
-			}
             FileBody bin = new FileBody(file);
-            MultipartEntity reqEntity = new MultipartEntity();
+            MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE,null,Charset.forName("UTF-8"));
             reqEntity.addPart(new FormBodyPart("file", bin));
-            reqEntity.addPart("filename", new StringBody(URLDecoder.decode(fileName, "UTF-8")));
-            reqEntity.addPart("folder_id", new StringBody(String.valueOf(folderId)));
+            reqEntity.addPart("filename", new StringBody(URLEncoder.encode(fileName, "UTF-8"), Charset.forName("utf-8")));
+            reqEntity.addPart("folder_id", new StringBody(String.valueOf(folderId), Charset.forName("utf-8")));
+            httpPost.setHeader("Content-Encoding", "UTF-8");
             httpPost.setEntity(reqEntity);
 			HttpResponse response;
 			response = httpclient.execute(httpPost, localContext);
 			HttpEntity responseEntity = response.getEntity();
 			String responseString=EntityUtils.toString(responseEntity);
 			if(debug) {
+				System.out.println("box uploadFile : "+httpPost.getURI()+", "+folderId+", "+fileName+", decode : "+URLDecoder.decode(fileName, "UTF-8")+", encode : "+URLEncoder.encode(fileName, "UTF-8"));
+				System.out.println("box uploadFile : "+reqEntity.getContentEncoding());
 				System.out.println("box uploadFile : "+responseString);
 			}
 			JsonParser jsonParser=new JsonParser();
