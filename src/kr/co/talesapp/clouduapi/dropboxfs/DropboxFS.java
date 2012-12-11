@@ -3,6 +3,7 @@ package kr.co.talesapp.clouduapi.dropboxfs;
 import java.io.File;
 import java.net.FileNameMap;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,7 +81,7 @@ public class DropboxFS extends CloudFS {
 			String fullPath=prop.getProperty("DropboxFS.uploadFile")+"/"+prop.getProperty("DropboxFS.root")+"/"+folder_path+"/"+fileName;
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
-			fullPath=fullPath.replaceAll("\\+", "%20");
+			//fullPath=fullPath.replaceAll("\\+", "%20");
 			fullPath=fullPath.replaceAll(" ", "%20");
 			HttpPost httpPost=new HttpPost(fullPath);
 			httpPost.addHeader("Authorization", authHeader);
@@ -119,7 +120,7 @@ public class DropboxFS extends CloudFS {
 			String fullPath=prop.getProperty("DropboxFS.downloadFile")+"/"+prop.getProperty("DropboxFS.root")+"/"+path;
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
-			fullPath=fullPath.replaceAll("\\+", "%20");
+			//fullPath=fullPath.replaceAll("\\+", "%20");
 			fullPath=fullPath.replaceAll(" ", "%20");
 			HttpGet httpGet=new HttpGet(fullPath);
 			httpGet.addHeader("Authorization", authHeader);
@@ -334,16 +335,17 @@ public class DropboxFS extends CloudFS {
 		try {
 			String fullPath=prop.getProperty("DropboxFS.getFolderTree")+"/"+prop.getProperty("DropboxFS.root");
 			if(path!=null && !path.equals("") && !path.equals("/")) {
-				fullPath+="/"+path;
+				fullPath+="/"+URLEncoder.encode(path, "UTF-8");
 			}
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
-			fullPath=fullPath.replaceAll("\\+", "%20");
+			//fullPath=fullPath.replaceAll("\\+", "%20");
 			fullPath=fullPath.replaceAll(" ", "%20");
 			fullPath+="/?list=true";
 			HttpGet httpGet=new HttpGet(fullPath);
 			httpGet.setHeader("Authorization", authHeader);
 			if(debug) {
+				System.out.println("dropbox url : "+fullPath);
 				System.out.println("dropbox auth header : "+authHeader);
 			}
 			HttpResponse response;

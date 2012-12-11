@@ -8,7 +8,6 @@ cloudUFS.init(ICloudFS.CloudType.UBUNTUONE, null, "token",
         "secret",
         "consumer key",
         "consumer secret");
-
 cloudUFS.setDebug(true);
 String type_str=request.getParameter("type");
 ICloudFS.CloudType type;
@@ -33,6 +32,12 @@ List<CUFile> list=cloudUFS.getFiles(type, path);
 <script src="http://code.jquery.com/jquery-1.8.2.js"></script>
 <script src="http://code.jquery.com/ui/1.9.0/jquery-ui.js"></script>
 <script language="javascript">
+function urlencode (str) {
+	  str = (str + '').toString();
+
+	  return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
+	  replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
+}
 var type=<%=type_str%>;
 var id;
 var path;
@@ -65,7 +70,7 @@ $(function () {
                         t='ubuntuone';
                         break;
                     }
-                    uri='createFolder.jsp?type='+t+'&parent_path='+currentPath+'&parent_id='+currentPath+'&name='+name.val();
+                    uri='createFolder.jsp?type='+t+'&parent_path='+urlencode(currentPath)+'&parent_id='+urlencode(currentPath)+'&name='+urlencode(name.val());
                     $.ajax({
                         type: 'GET',
                         url: uri
@@ -102,7 +107,7 @@ $(function () {
                         t='ubuntuone';
                         break;
                     }
-                    uri='createFolder.jsp?type='+t+'&parent_path='+currentPath+'&parent_id='+currentPath+'&name='+name.val();
+                    uri='createFolder.jsp?type='+t+'&parent_path='+urlencode(currentPath)+'&parent_id='+urlencode(currentPath)+'&name='+urlencode(name.val());
                     $.ajax({
                         type: 'GET',
                         url: uri
@@ -182,9 +187,9 @@ $(function () {
                         break;
                     }
                     if(dir){
-                        uri='renameFolder.jsp?type='+t+'&path='+path+'&newPath='+currentPath+'/'+rname.val();
+                        uri='renameFolder.jsp?type='+t+'&path='+urlencode(path)+'&newPath='+urlencode(currentPath)+'/'+urlencode(rname.val());
                     } else {
-                        uri='renameFile.jsp?type='+t+'&path='+path+'&newPath='+currentPath+'/'+rname.val();
+                        uri='renameFile.jsp?type='+t+'&path='+urlencode(path)+'&newPath='+urlencode(currentPath)+'/'+urlencode(rname.val());
                     }
                     $.ajax({
                         type: 'GET',
@@ -223,7 +228,7 @@ $(function () {
                         t='ubuntuone';
                         break;
                     }
-                    uri='createFolder.jsp?type='+t+'&parent_path='+currentPath+'&parent_id='+currentPath+'&name='+name.val();
+                    uri='createFolder.jsp?type='+t+'&parent_path='+urlencode(currentPath)+'&parent_id='+urlencode(currentPath)+'&name='+urlencode(name.val());
                     $.ajax({
                         type: 'GET',
                         url: uri
@@ -279,9 +284,9 @@ function deletef() {
 			break;
 		}
 		if(dir){
-			uri='deleteFolder.jsp?type='+t+'&path='+path+'&folder_id='+id+'&sha1='+sha1;
+			uri='deleteFolder.jsp?type='+t+'&path='+urlencode(path)+'&folder_id='+urlencode(id)+'&sha1='+sha1;
 		} else {
-			uri='deleteFile.jsp?type='+t+'&path='+path+'&file_id='+id+'&sha1='+sha1;
+			uri='deleteFile.jsp?type='+t+'&path='+urlencode(path)+'&file_id='+urlencode(id)+'&sha1='+sha1;
 		}
         $.ajax({
             type: 'GET',
@@ -310,7 +315,7 @@ function downloadfile() {
         t='ubuntuone';
         break;
     }
-    uri='downloadFile.jsp?type='+t+'&path='+path+'&file_id='+id+'&name='+name;
+    uri='downloadFile.jsp?type='+t+'&path='+urlencode(path)+'&file_id='+urlencode(id)+'&name='+urlencode(name);
     window.open(uri);
 }
 function copyf() {
@@ -321,7 +326,7 @@ function copyf() {
     } else {
         d=0;
     }
-    window.open("getDir.jsp?type="+type+"&dir="+d+"&buttonText=Copy");
+    window.open("getDir.jsp?type="+type+"&dir="+urlencode(d)+"&buttonText=Copy");
 }
 function movef() {
     //$( "#dialog-move" ).dialog( "open" );
@@ -331,7 +336,10 @@ function movef() {
     } else {
         d=0;
     }
-    window.open("getDir.jsp?type="+type+"&dir="+d+"&buttonText=Move");
+    window.open("getDir.jsp?type="+type+"&dir="+urlencode(d)+"&buttonText=Move");
+}
+function getFiles(type, path) {
+	location.href='?type='+type+'&path='+urlencode(path);
 }
 function uploadfile() {
     $( "#dialog-upload" ).dialog( "open" );
@@ -413,7 +421,7 @@ for(int i=0;list!=null && i<list.size();i++) {
 //	}
 	if(f.getDir()) {
 %>
-        <td><a href="?type=<%=typei%>&path=<%=f.getPath()%>"><%=f.getName()%></a></td>
+        <td><!-- <a href="?type=<%=typei%>&path=<%=f.getPath()%>">--><a href="javascript:getFiles(<%=typei%>, '<%=f.getPath()%>')"><%=f.getName()%></a></td>
 <%
 } else {
 %>

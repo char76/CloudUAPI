@@ -375,7 +375,10 @@ public class BoxFS extends CloudFS {
 			HttpResponse response;
 			response = httpclient.execute(httpDelete, localContext);
 			HttpEntity responseEntity = response.getEntity();
-			String responseString=EntityUtils.toString(responseEntity);
+			String responseString="";
+			if(responseEntity!=null) {
+				responseString=EntityUtils.toString(responseEntity);
+			}
 			if(debug) {
 				System.out.println(responseString);
 			}

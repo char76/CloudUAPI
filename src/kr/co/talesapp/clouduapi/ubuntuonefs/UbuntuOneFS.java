@@ -54,13 +54,14 @@ public class UbuntuOneFS extends CloudFS {
 		try {
 			String fullPath=prop.getProperty("UbuntuOneFS.createFolder");
 			if(parent_path.equals("/")) {
-				fullPath+="/~/Ubuntu%20One/"+name;
+				fullPath+="/~/Ubuntu%20One/"+URLEncoder.encode(name, "UTF-8");
 			} else {
-				fullPath+=parent_path+"/"+name;
+				fullPath+=URLEncoder.encode(parent_path, "UTF-8")+"/"+URLEncoder.encode(name, "UTF-8");
 			}
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
-			fullPath=fullPath.replaceAll("\\+", "%20");
+			//fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll("Ubuntu\\+One", "Ubuntu%20One");
 			fullPath=fullPath.replaceAll(" ", "%20");
 			if(debug) {
 				System.out.println("ubuntu createFolder : "+fullPath);
@@ -103,13 +104,14 @@ public class UbuntuOneFS extends CloudFS {
 		try {
 			String fullPath=prop.getProperty("UbuntuOneFS.uploadFile");
 			if(folder_path.equals("/")) {
-				fullPath+="/~/Ubuntu%20One/"+fileName;
+				fullPath+="/~/Ubuntu%20One/"+URLEncoder.encode(fileName, "UTF-8");
 			} else {
-				fullPath+=folder_path+"/"+fileName;
+				fullPath+=URLEncoder.encode(folder_path, "UTF-8")+"/"+URLEncoder.encode(fileName, "UTF-8");
 			}
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
-			fullPath=fullPath.replaceAll("\\+", "%20");
+			//fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll("Ubuntu\\+One", "Ubuntu%20One");
 			fullPath=fullPath.replaceAll(" ", "%20");
 			HttpPut httpPut=new HttpPut(fullPath);
 			if(debug){
@@ -149,10 +151,11 @@ public class UbuntuOneFS extends CloudFS {
 		CUError err=new CUError();
 		try {
 			String fullPath=prop.getProperty("UbuntuOneFS.downloadFile");
-			fullPath+=path;
+			fullPath+=URLEncoder.encode(path, "UTF-8");
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
-			fullPath=fullPath.replaceAll("\\+", "%20");
+			//fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll("Ubuntu\\+One", "Ubuntu%20One");
 			fullPath=fullPath.replaceAll(" ", "%20");
 			if(debug){
 				System.out.println("ubuntuone downloadFile : "+fullPath);
@@ -201,7 +204,8 @@ public class UbuntuOneFS extends CloudFS {
 			fullPath+=URLEncoder.encode(path, "UTF-8");
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
-			fullPath=fullPath.replaceAll("\\+", "%20");
+			//fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll("Ubuntu\\+One", "Ubuntu%20One");
 			fullPath=fullPath.replaceAll(" ", "%20");
 
 			newPath=newPath.replaceAll("\\+", "\\ ");
@@ -252,10 +256,11 @@ public class UbuntuOneFS extends CloudFS {
 		CUError err=new CUError();
 		try {
 			String fullPath=prop.getProperty("UbuntuOneFS.move");
-			fullPath+=path;
+			fullPath+=URLEncoder.encode(path, "UTF-8");
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
-			fullPath=fullPath.replaceAll("\\+", "%20");
+			//fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll("Ubuntu\\+One", "Ubuntu%20One");
 			fullPath=fullPath.replaceAll(" ", "%20");
 
 			newPath=newPath.replaceAll("\\+", "\\ ");
@@ -351,10 +356,11 @@ public class UbuntuOneFS extends CloudFS {
 		CUError err=new CUError();
 		String fullPath=prop.getProperty("UbuntuOneFS.delete");
 		try {
-			fullPath+=path;
+			fullPath+=URLEncoder.encode(path, "UTF-8");
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
-			fullPath=fullPath.replaceAll("\\+", "%20");
+			//fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll("Ubuntu\\+One", "Ubuntu%20One");
 			fullPath=fullPath.replaceAll(" ", "%20");
 			HttpDelete delete = new HttpDelete(fullPath);
 			delete.setHeader("Authorization", authHeader);
@@ -419,14 +425,14 @@ public class UbuntuOneFS extends CloudFS {
 		try {
 			String fullPath=prop.getProperty("UbuntuOneFS.getFolderTree");
 			if(path!=null && !path.equals("") && !path.equals("/")) {
-				fullPath+=path;
+				fullPath+=URLEncoder.encode(path, "UTF-8");
 				//fullPath+=path;
 			} else if(path!=null && path.equals("/")){
 				fullPath+="/~/Ubuntu%20One";
 			}
 			fullPath=fullPath.replaceAll("%2F", "/");
 			fullPath=fullPath.replaceAll("%7E", "~");
-			fullPath=fullPath.replaceAll("\\+", "%20");
+			fullPath=fullPath.replaceAll("Ubuntu\\+One", "Ubuntu%20One");
 			fullPath=fullPath.replaceAll(" ", "%20");
 			fullPath+="/?include_children=true";
 			if(debug) {
